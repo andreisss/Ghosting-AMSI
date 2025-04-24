@@ -18,3 +18,5 @@ rpcrt4.dll!NdrClientCall3 is a low-level function in the RPC runtime responsible
 AMSI’s backend communication with AV providers is likely implemented via auto-generated stubs (from IDL), which call into NdrClientCall3 to perform the actual RPC.
 
 By hijacking this stub, we gain full control over what AMSI thinks it’s scanning.
+
+https://cdn-images-1.medium.com/max/1000/1*XU2nnpQEHZrH7O2g0Uvtew.gif
