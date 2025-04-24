@@ -19,5 +19,5 @@ AMSI’s backend communication with AV providers is likely implemented via auto-
 
 By hijacking this stub, we gain full control over what AMSI thinks it’s scanning.
 
+![22 04 2025_00 20 52_REC](https://github.com/user-attachments/assets/dc6c8534-99ac-4ec8-aaca-c58124e5a64c)
 
-![Alt text]([https://yourdomain.com/your-image.gif](https://cdn-images-1.medium.com/max/1000/1*XU2nnpQEHZrH7O2g0Uvtew.gif))
